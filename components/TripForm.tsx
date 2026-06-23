@@ -72,7 +72,7 @@ export default function TripForm({ onTripCreated, initialData, onCancel }: TripF
         <select
           className="mt-1 block w-full border border-gray-300 px-3 py-2 text-black bg-white focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => setStatus(e.target.value as Trip['status'])}
         >
           <option value="planning">Planning</option>
           <option value="booked">Booked</option>
