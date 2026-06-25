@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import dbConnect from '@/lib/mongodb';
 import Conversation from '@/lib/models/Conversation';
+import { isValidObjectId, errorResponse } from '@/lib/validation';
 
 export async function GET(
   _req: Request,
@@ -13,6 +14,16 @@ export async function GET(
     }
 
     const { id } = await params;
+
+    // Validate ObjectId format
+    if (!isValidObjectId(id)) {
+      return errorResponse(
+        'Invalid conversation ID',
+        400,
+        'The conversation ID format is invalid.'
+      );
+    }
+
     await dbConnect();
 
     const conversation = await Conversation.findOne({
@@ -42,6 +53,16 @@ export async function DELETE(
     }
 
     const { id } = await params;
+
+    // Validate ObjectId format
+    if (!isValidObjectId(id)) {
+      return errorResponse(
+        'Invalid conversation ID',
+        400,
+        'The conversation ID format is invalid.'
+      );
+    }
+
     await dbConnect();
 
     const result = await Conversation.findOneAndDelete({

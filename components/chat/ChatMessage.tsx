@@ -2,6 +2,8 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import type { ChatMessage as ChatMessageType } from '@/types/chat';
 
 interface ChatMessageProps {
@@ -44,8 +46,29 @@ export default function ChatMessage({ message, isStreaming }: ChatMessageProps) 
         {isUser ? (
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
         ) : message.content ? (
-          <div className="chat-content prose-chat">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <div className="prose prose-sm max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                code({ className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || '');
+                  return match ? (
+                    <SyntaxHighlighter
+                      {...props as any}
+                      style={oneDark}
+                      language={match[1]}
+                      PreTag="div"
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            >
               {message.content}
             </ReactMarkdown>
           </div>

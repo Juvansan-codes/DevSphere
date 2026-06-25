@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @import "tailwindcss";
-
+@plugin "@tailwindcss/typography";
 @theme {
   --font-sans: var(--font-inter), sans-serif;
   --font-display: var(--font-inter), sans-serif;
@@ -330,4 +330,17 @@ body {
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-secondary);
+}
+
+/* Custom Typography Plugin Overrides */
+.prose {
+  --tw-prose-body: var(--color-on-surface);
+  --tw-prose-headings: var(--color-on-surface);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bold: var(--color-primary);
+  --tw-prose-counters: var(--color-secondary);
+  --tw-prose-bullets: var(--color-primary);
+  --tw-prose-quotes: var(--color-on-surface);
+  --tw-prose-quote-borders: var(--color-primary-container);
+  --tw-prose-code: var(--color-primary);
 }

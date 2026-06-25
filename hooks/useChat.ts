@@ -42,7 +42,9 @@ export function useChat(): UseChatReturn {
       const res = await fetch('/api/conversation');
       if (res.ok) {
         const data = await res.json();
-        setConversations(data);
+        // Handle both paginated response { conversations: [...] } and legacy flat array
+        const convList = Array.isArray(data) ? data : (data.conversations || []);
+        setConversations(convList);
       }
     } catch (err) {
       console.error('Failed to load conversations:', err);
@@ -50,13 +52,13 @@ export function useChat(): UseChatReturn {
   }, []);
 
   // --- Load memory ---
-  const loadMemory = useCallback(async () => {
+  const loadMemory = useCallback(async (conversationId = activeConversationId) => {
     try {
-      if (!activeConversationId) {
+      if (!conversationId) {
         setMemory({});
         return;
       }
-      const res = await fetch(`/api/memory?conversationId=${activeConversationId}`);
+      const res = await fetch(`/api/memory?conversationId=${encodeURIComponent(conversationId)}`);
       if (res.ok) {
         const data = await res.json();
         setMemory(data);
@@ -69,7 +71,7 @@ export function useChat(): UseChatReturn {
   // --- Load a specific conversation ---
   const loadConversation = useCallback(async (id: string) => {
     try {
-      const res = await fetch(`/api/conversation/${id}`);
+      const res = await fetch(`/api/conversation/${encodeURIComponent(id)}`);
       if (res.ok) {
         const data: Conversation = await res.json();
         setMessages(data.messages);
@@ -97,12 +99,15 @@ export function useChat(): UseChatReturn {
   const deleteConversation = useCallback(
     async (id: string) => {
       try {
-        const res = await fetch(`/api/conversation/${id}`, { method: 'DELETE' });
+        const res = await fetch(`/api/conversation/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+        });
         if (res.ok) {
           setConversations((prev) => prev.filter((c) => c._id !== id));
           if (activeConversationId === id) {
             setMessages([]);
             setActiveConversationId(null);
+            setMemory({});
           }
         } else {
           setError('Failed to delete conversation');
@@ -122,7 +127,7 @@ export function useChat(): UseChatReturn {
         setMemory({});
         return;
       }
-      const res = await fetch(`/api/memory?conversationId=${activeConversationId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/memory?conversationId=${encodeURIComponent(activeConversationId)}`, { method: 'DELETE' });
       if (res.ok) {
         setMemory({});
       }
@@ -185,6 +190,7 @@ export function useChat(): UseChatReturn {
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+        let responseConversationId = activeConversationId;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -203,6 +209,7 @@ export function useChat(): UseChatReturn {
               const data = JSON.parse(line.slice(6));
 
               if (data.type === 'meta' && data.conversationId) {
+                responseConversationId = data.conversationId;
                 setActiveConversationId(data.conversationId);
               } else if (data.type === 'token' && data.content) {
                 // Artificial delay to smooth out the typing speed from fast LLMs like Groq
@@ -223,7 +230,7 @@ export function useChat(): UseChatReturn {
                 setError(data.error || 'An error occurred');
               } else if (data.type === 'done') {
                 // Refresh memory and conversations after completion
-                loadMemory();
+                loadMemory(responseConversationId);
                 loadConversations();
               }
             } catch {
