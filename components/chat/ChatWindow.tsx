@@ -28,6 +28,10 @@ export default function ChatWindow({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     scrollToBottom();
@@ -47,10 +51,6 @@ export default function ChatWindow({
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   const isEmpty = messages.length === 0;
 

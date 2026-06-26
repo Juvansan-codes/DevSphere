@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ITrip extends Document {
@@ -5,6 +6,7 @@ export interface ITrip extends Document {
   description?: string;
   status: 'planning' | 'booked' | 'completed';
   user: mongoose.Types.ObjectId;
+  itineraryData?: any;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +33,9 @@ const TripSchema: Schema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    itineraryData: {
+      type: mongoose.Schema.Types.Mixed,
     },
   },
   {

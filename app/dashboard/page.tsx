@@ -4,12 +4,15 @@ import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import TripList from '@/components/TripList';
 import TripForm from '@/components/TripForm';
+import AITripPlanList from '@/components/AITripPlanList';
 import { Trip } from '@/types';
+import { AITripPlan } from '@/types/ai-trip-plan';
 import Link from 'next/link';
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [aiPlans, setAiPlans] = useState<AITripPlan[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchTrips = async () => {
@@ -21,15 +24,33 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error('Failed to fetch trips', error);
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const fetchAIPlans = async () => {
+    try {
+      const res = await fetch('/api/ai-trip-plans?limit=10');
+      if (res.ok) {
+        const data = await res.json();
+        setAiPlans(data.plans || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch AI plans', error);
+    }
+  };
+
+  const fetchAll = async () => {
+    setLoading(true);
+    await Promise.all([fetchTrips(), fetchAIPlans()]);
+    setLoading(false);
   };
 
   useEffect(() => {
     if (status === 'authenticated') {
-      fetchTrips();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchAll();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   if (status === 'loading' || loading) {
@@ -89,7 +110,7 @@ export default function Dashboard() {
       <main className="mx-auto max-w-[1400px] xl:max-w-[1600px] 2xl:max-w-[1800px] w-full px-6 lg:px-12 xl:px-20 py-12 xl:py-16 flex-1">
         {/* AI Trip Planner Card */}
         <Link
-          href="/dashboard/chat"
+          href="/dashboard/ai-planner"
           className="group block mb-10 xl:mb-14 bg-gradient-to-r from-primary-container/20 via-primary-container/10 to-transparent border border-primary-container/30 rounded-2xl p-6 xl:p-8 hover:shadow-lg hover:border-primary-container/50 transition-all"
         >
           <div className="flex items-center justify-between">
@@ -129,14 +150,37 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Trip List Column */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white border border-surface-container rounded-2xl p-6 xl:p-8 shadow-sm">
-              <h2 className="text-lg xl:text-xl font-bold text-on-surface border-b border-surface-container pb-4 mb-6 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-xl">luggage</span>
-                Your Itineraries
-              </h2>
-              <TripList trips={trips} onTripUpdated={fetchTrips} />
+          {/* Right Column: Trip List + AI Plans */}
+          <div className="lg:col-span-2 space-y-12 xl:space-y-16">
+            {/* Your Itineraries Section */}
+            <div className="space-y-4">
+              <div className="bg-white border border-surface-container rounded-2xl p-6 xl:p-8 shadow-sm">
+                <h2 className="text-lg xl:text-xl font-bold text-on-surface border-b border-surface-container pb-4 mb-6 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary text-xl">luggage</span>
+                  Your Itineraries
+                </h2>
+                <TripList trips={trips} onTripUpdated={fetchTrips} />
+              </div>
+            </div>
+
+            {/* AI Trip Plans Section */}
+            <div className="space-y-4">
+              <div className="bg-white border border-surface-container rounded-2xl p-6 xl:p-8 shadow-sm">
+                <div className="flex items-center justify-between border-b border-surface-container pb-4 mb-6">
+                  <h2 className="text-lg xl:text-xl font-bold text-on-surface flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-xl">auto_awesome</span>
+                    AI Trip Plans
+                  </h2>
+                  <Link
+                    href="/dashboard/ai-planner?new=true"
+                    className="px-4 py-2 bg-primary-container text-on-primary-container rounded-lg font-semibold text-sm hover:shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-base">add</span>
+                    Create Plan
+                  </Link>
+                </div>
+                <AITripPlanList plans={aiPlans} onPlanUpdated={fetchAll} />
+              </div>
             </div>
           </div>
         </div>

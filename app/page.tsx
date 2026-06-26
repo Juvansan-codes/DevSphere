@@ -56,7 +56,7 @@ export default function Home() {
                 Travel planning,<br className="hidden lg:block"/> simplified.
               </motion.h1>
               <motion.p variants={fadeUpVariant} className="font-body-lg text-body-lg text-secondary max-w-lg leading-relaxed">
-                The minimalist's way to organize trips, discover gems, and build itineraries that flow without the noise.
+                The minimalist&apos;s way to organize trips, discover gems, and build itineraries that flow without the noise.
               </motion.p>
               <motion.div variants={fadeUpVariant} className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Link
@@ -90,7 +90,7 @@ export default function Home() {
               className="relative mt-12 md:mt-0"
             >
               <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-surface-container">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <motion.img
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
@@ -168,7 +168,7 @@ export default function Home() {
                     Save hidden spots, cafes, and sights from any social feed or map directly into your personal travel inbox.
                   </p>
                   <div className="rounded-xl border border-surface-container overflow-hidden aspect-[4/3] bg-surface-container-low group-hover:shadow-sm transition-shadow">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    { }
                     <motion.img
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -201,7 +201,7 @@ export default function Home() {
                     A distraction-free, drag-and-drop itinerary that builds itself as you add destinations and experiences.
                   </p>
                   <div className="rounded-xl border border-surface-container overflow-hidden aspect-[4/3] bg-surface-container-low group-hover:shadow-sm transition-shadow">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    { }
                     <motion.img
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -234,7 +234,7 @@ export default function Home() {
                     Invite friends to contribute and view the plan in real-time. Say goodbye to messy group chat threads.
                   </p>
                   <div className="rounded-xl border border-surface-container overflow-hidden aspect-[4/3] bg-surface-container-low group-hover:shadow-sm transition-shadow">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    { }
                     <motion.img
                       whileHover={{ scale: 1.05 }}
                       transition={{ duration: 0.6, ease: "easeOut" }}

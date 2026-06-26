@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Trip {
   _id: string;
   destination: string;
@@ -5,4 +6,5 @@ export interface Trip {
   status: 'planning' | 'booked' | 'completed';
   createdAt: string;
   updatedAt: string;
+  itineraryData?: any;
 }
