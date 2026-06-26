@@ -452,7 +452,7 @@ async function generatePlanWithoutTools(
       },
     ],
     response_format: { type: 'json_object' },
-  });
+  }, { timeout: 15000, maxRetries: 0 });
 
   const content = completion.choices[0]?.message?.content ?? '{}';
   const parsed = JSON.parse(content) as Record<string, unknown>;
@@ -532,7 +532,7 @@ export async function POST(
               stream: true,
               tools,
               tool_choice: 'auto'
-            });
+            }, { timeout: 15000, maxRetries: 0 });
 
             let currentResponse = '';
             const toolCalls: PendingToolCall[] = [];
@@ -635,13 +635,13 @@ export async function POST(
                 finalAssistantMessage += fallback.assistantMessage;
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'token', content: fallback.assistantMessage })}\n\n`));
               } catch (fallbackErr) {
-                const errMsg = fallbackErr instanceof Error ? fallbackErr.message : 'AI error occurred';
+                const errMsg = "Couldn't generate that right now — please try again";
                 controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: errMsg })}\n\n`));
               }
               break;
             }
 
-            const errMsg = err instanceof Error ? err.message : 'AI error occurred';
+            const errMsg = "Couldn't generate that right now — please try again";
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: errMsg })}\n\n`));
             break;
           }

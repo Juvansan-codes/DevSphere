@@ -1,53 +1,54 @@
-# 🌍 Vyora: The Next-Generation AI Trip Planner
+# Vyora: Your AI Travel Agent
 
-[![AI Powered](https://img.shields.io/badge/AI-Powered-blue.svg)](#) [![Hackathon Submission](https://img.shields.io/badge/Hackathon-Submission-success.svg)](#)
+> **Turn hours of tedious travel research into a personalized, interactive itinerary in minutes.**
 
-> **Elevating travel through intelligent automation and seamless collaboration.**
+## What is Vyora?
 
-## 🚀 The Vision
+Planning a trip should be exciting, but it often devolves into juggling dozens of browser tabs, spreadsheets, and endless research. Vyora is a minimalist, intelligent web application that solves this by centralizing the travel planning experience. 
 
-Planning a trip should be as exciting as the journey itself. However, modern travel planning is fragmented across dozens of tabs, apps, and spreadsheets. **Vyora** centralizes the travel experience, leveraging advanced AI to transform hours of tedious research into minutes of delightful discovery. We don't just plan trips; we curate unforgettable experiences.
+At its core is a personalized AI travel planner that listens to your preferences—budget, travel style, dates, and interests—and instantly generates a comprehensive, structured, day-by-day itinerary. Instead of static lists, you interact with a conversational AI agent that can dynamically adjust your schedule, recommend hidden gem restaurants, and optimize your budget on the fly.
 
----
+## Live Demo
 
-## 🤖 AI-Powered Capabilities (The "Brain")
+🚀 **[Click here to view the live demo](https://vyora-trip.vercel.app/)**
 
-Our architecture integrates cutting-edge AI to provide a deeply personalized experience, designed to impress technical evaluators with its contextual awareness and dynamic generation:
+## How to Run Locally
 
-- **🧠 Contextual Smart Recommendations:** Moving beyond static lists, our AI analyzes user preferences, travel history, and real-time trends to suggest highly contextual attractions, hidden gem restaurants, and bespoke local experiences.
-- **💬 Conversational Travel Agent (LLM Integration):** A sophisticated AI travel chatbot that doesn't just answer questions, but actively helps negotiate itineraries, provides cultural insights, and dynamically adapts the schedule based on natural language inputs.
-- **⚡ Dynamic Itinerary Optimization:** Instantly drafts optimized day-by-day itineraries that algorithmically account for geographical proximity, transit times, and pacing to prevent travel fatigue.
+You can spin up Vyora on your local machine in just a few steps:
 
----
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Juvansan-codes/Vyora.git
+   cd Vyora
+   ```
 
-## ✨ Core Product Features
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Built for scale, usability, and delight:
+3. **Set up Environment Variables:**
+   Create a `.env.local` file in the root directory and define the following keys (do not use real production values here):
+   ```env
+   # Your MongoDB connection string for the database
+   MONGODB_URI=
 
-- **🗺️ Interactive Map Integration:** Visual itinerary mapping. See locations, routes, and POIs plotted dynamically to optimize physical travel time.
-- **📅 Intuitive Itinerary Management:** Drag-and-drop scheduling for activities, dining, and accommodations.
-- **💸 Real-Time Expense Tracking:** Automated budget monitoring with categorization (flights, lodging, food) to keep spending in check.
-- **🤝 Synchronous Collaboration:** Multiplayer trip planning. Share and edit itineraries in real-time with family and friends.
-- **🗂️ Centralized Travel Vault:** Secure, quick-access storage for essential documents (boarding passes, reservations, tickets).
-- **🌤️ Hyper-Local Weather Forecasts:** Integrated, location-aware weather updates to ensure you're always prepared.
-- **🎒 Smart Packing List Generator:** Context-aware checklists that adapt based on the destination's climate and planned activities.
+   # Authentication Secret and URL for NextAuth
+   NEXTAUTH_SECRET=
+   NEXTAUTH_URL=http://localhost:3000
 
----
+   # Groq API Key to power the AI Agent
+   GROQ_API_KEY=
+   ```
 
-## 🏗️ Technical Architecture & Stack
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   Open your browser and navigate to `http://localhost:3000`.
 
-*(Customize this section based on your actual stack)*
-- **Frontend:** Next.js, React, Tailwind CSS
-- **Backend/Database:** MongoDB Atlas
-- **AI/ML:** Groq API (High-speed LLM inference) for NLP, reasoning, and data synthesis
-- **Mapping:** Google Maps API / Mapbox
+## How the AI Feature Works
 
----
+Vyora's intelligent features are powered by the **Groq API** utilizing the blazing-fast Llama-3 model. Rather than just asking the LLM to output long, unstructured text, our system uses advanced function calling (tool use) to maintain and modify a persistent, structured JSON representation of your trip.
 
-## 📈 Value Proposition & Impact
-
-- **For Users:** Reduces trip planning time by up to 70%. Maximizes the quality of the travel experience through hyper-personalized AI curation.
-- **For Evaluators:** Demonstrates complex state management, real-time database synchronization, API orchestration, and a highly practical, impactful application of Large Language Models (LLMs) solving a real-world problem.
-
----
-
+The AI system prompt instructs it to act as an expert travel planner that has access to your existing itinerary state. When you chat with the AI and ask it to "swap my lunch on day 2 for a sushi place," the AI understands the context, generates the new recommendation, and calls a backend `updateAITripPlan` tool. This tool surgically merges only the changed fields into your database, which instantly updates the user interface. The result is a seamless conversation where the AI actually "does the work" of editing your trip plan automatically.

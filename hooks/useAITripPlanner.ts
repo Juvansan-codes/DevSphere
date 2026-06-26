@@ -144,7 +144,16 @@ export function useAITripPlanner(): UseAITripPlannerReturn {
     if (abortControllerRef.current) abortControllerRef.current.abort();
     abortControllerRef.current = new AbortController();
 
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const resetTimeout = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        if (abortControllerRef.current) abortControllerRef.current.abort(new Error("Timeout"));
+      }, 15000);
+    };
+
     try {
+      resetTimeout();
       const res = await fetch(
         `/api/ai-trip-plans/${encodeURIComponent(activePlan._id)}/chat`,
         {
@@ -168,6 +177,7 @@ export function useAITripPlanner(): UseAITripPlannerReturn {
 
       while (true) {
         const { done, value } = await reader.read();
+        resetTimeout();
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
@@ -214,9 +224,7 @@ export function useAITripPlanner(): UseAITripPlannerReturn {
         }
       }
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      const errMsg = err instanceof Error ? err.message : 'Failed to send message';
-      setError(errMsg);
+      setError("Couldn't generate that right now — please try again");
       // Remove empty assistant message on error
       setMessages((prev) => {
         const updated = [...prev];
@@ -225,6 +233,7 @@ export function useAITripPlanner(): UseAITripPlannerReturn {
         return updated;
       });
     } finally {
+      if (timeoutId) clearTimeout(timeoutId);
       setIsStreaming(false);
       abortControllerRef.current = null;
     }
